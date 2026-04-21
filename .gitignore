@@ -1,0 +1,9 @@
+# Dependencies & build output (diagram-lab)
+diagram-lab/node_modules
+diagram-lab/dist
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea
+*.sw?
