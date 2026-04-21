@@ -664,7 +664,29 @@ export default function TestCoverageSection() {
         </div>
       </section>
 
-      <section id="process" className="relative overflow-hidden bg-navy px-6 py-16 text-white md:py-24">
+      <section
+        id="stats"
+        className="relative overflow-hidden border-t border-white/10 bg-navy px-6 py-14 text-white md:py-20"
+        aria-label="Key statistics"
+      >
+        <div className="pointer-events-none absolute inset-0 opacity-[0.85]" aria-hidden="true">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(0,184,169,0.08),transparent_60%)]"></div>
+        </div>
+        <div className="relative mx-auto grid max-w-[1000px] grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8 md:gap-12">
+          {[
+            { value: "1,200+", label: "Projects delivered" },
+            { value: "23", label: "Countries served" },
+            { value: "25+", label: "Years of expertise" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-4xl font-bold tabular-nums tracking-tight text-white sm:text-5xl md:text-6xl">{stat.value}</p>
+              <p className="mt-2 text-sm font-medium text-white/65 md:mt-3 md:text-base">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="process" className="relative overflow-hidden border-t border-white/10 bg-navy px-6 py-16 text-white md:py-24">
         <div className="pointer-events-none absolute inset-0 opacity-[0.9]" aria-hidden="true">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,184,169,0.16),transparent_55%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.05),transparent_55%)]"></div>
           <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:52px_52px] opacity-[0.18]"></div>
