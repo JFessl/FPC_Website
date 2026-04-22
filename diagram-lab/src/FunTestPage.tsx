@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 
 function DraggableMarquee({
   children,
@@ -118,6 +119,7 @@ function DraggableMarquee({
 export default function FunTestPage() {
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const siteUrl = "https://www.funtestfpc.com";
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -135,6 +137,39 @@ export default function FunTestPage() {
 
   return (
     <div className="bg-surface text-slate antialiased">
+      <Helmet>
+        <title>FunTest by FPC | No‑Code Hardware Test Automation</title>
+        <meta
+          name="description"
+          content="FunTest is a no-code platform for hardware test automation: build test sequences, control instruments via plugins, guide operators, and generate reports. Ideal for PCBA testing, PCBA fixtures, avionics testing, and LRU testing."
+        />
+        <link rel="canonical" href={`${siteUrl}/funtest`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="FPC" />
+        <meta property="og:title" content="FunTest by FPC | No‑Code Hardware Test Automation" />
+        <meta
+          property="og:description"
+          content="No-code hardware test automation for PCBA testing/fixtures, avionics testing, LRU testing, and production verification."
+        />
+        <meta property="og:url" content={`${siteUrl}/funtest`} />
+        <meta property="og:image" content={`${siteUrl}/visual/Logo.png`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "FunTest",
+            applicationCategory: "DeveloperApplication",
+            operatingSystem: "Windows",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            url: `${siteUrl}/funtest`,
+            publisher: { "@type": "Organization", name: "FPC", url: siteUrl },
+            description:
+              "No-code software for hardware test automation: build sequences, control hardware via plugins, operator interface, and reporting for PCBA testing, avionics testing, and LRU testing.",
+          })}
+        </script>
+      </Helmet>
+
       <header className="fixed inset-x-0 top-0 z-50">
         <div className="mx-auto w-full max-w-[1200px] px-6 pt-5">
           <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-navy/35 px-4 py-3 backdrop-blur-md md:px-6">

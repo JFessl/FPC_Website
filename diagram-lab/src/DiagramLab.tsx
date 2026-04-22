@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Helmet } from "react-helmet-async";
 
 function DraggableMarquee({
   children,
@@ -627,9 +628,58 @@ function HeroVideo({ onOpenCalendly }: { onOpenCalendly: () => void }) {
 }
 export default function TestCoverageSection() {
   const [calendlyOpen, setCalendlyOpen] = useState(false);
+  const siteUrl = "https://www.funtestfpc.com";
 
   return (
     <div className="bg-surface text-slate antialiased">
+      <Helmet>
+        <title>FPC | Hardware Test Automation & Test Stations</title>
+        <meta
+          name="description"
+          content="FPC designs and delivers hardware test automation and test stations for electronics and complex systems — including PCBA testing, PCBA fixtures, avionics testing, and LRU testing."
+        />
+        <link rel="canonical" href={`${siteUrl}/`} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="FPC" />
+        <meta property="og:title" content="FPC | Hardware Test Automation & Test Stations" />
+        <meta
+          property="og:description"
+          content="Hardware test automation and station delivery — PCBA fixtures/testing, avionics testing, LRU testing, and more."
+        />
+        <meta property="og:url" content={`${siteUrl}/`} />
+        <meta property="og:image" content={`${siteUrl}/visual/Logo.png`} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": ["Organization", "LocalBusiness"],
+            name: "FPC",
+            url: siteUrl,
+            logo: `${siteUrl}/visual/Logo.png`,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "2335 W 208th St",
+              addressLocality: "Torrance",
+              addressRegion: "CA",
+              postalCode: "90501",
+              addressCountry: "US",
+            },
+            telephone: "+1-213-431-9776",
+            email: "info@funtestfpc.com",
+            sameAs: ["https://www.linkedin.com/company/fpc-usa"],
+            knowsAbout: [
+              "PCBA testing",
+              "PCBA fixtures",
+              "Avionics testing",
+              "LRU testing",
+              "Hardware test automation",
+              "Production test",
+              "Test station integration",
+            ],
+          })}
+        </script>
+      </Helmet>
+
       <SiteHeader onOpenCalendly={() => setCalendlyOpen(true)} />
       <HeroVideo onOpenCalendly={() => setCalendlyOpen(true)} />
       <CalendlyModal open={calendlyOpen} onClose={() => setCalendlyOpen(false)} />
