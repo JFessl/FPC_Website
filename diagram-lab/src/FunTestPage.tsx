@@ -387,7 +387,7 @@ export default function FunTestPage() {
             <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:52px_52px] opacity-[0.18]"></div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[1200px] space-y-14">
+          <div className="relative mx-auto w-full max-w-[1200px] space-y-20 md:space-y-24">
             <section id="operator" className="scroll-mt-28">
               <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-14">
                 <div>
