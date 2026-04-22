@@ -189,12 +189,6 @@ export default function FunTestPage() {
                   )}
                 </svg>
               </button>
-              <a
-                href="/"
-                className="rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
-              >
-                Back to home
-              </a>
               <button
                 type="button"
                 onClick={() => setOpen(true)}
