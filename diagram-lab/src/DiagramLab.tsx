@@ -1046,6 +1046,45 @@ export default function TestCoverageSection() {
         </div>
       </section>
 
+      <section id="learn-more" className="relative overflow-hidden border-t border-slate/10 bg-surface px-6 py-16 text-navy md:py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.85]" aria-hidden="true">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,184,169,0.10),transparent_55%)]"></div>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-[1200px]">
+          <div className="max-w-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-teal">Learn more</p>
+            <h2 className="mt-5 text-3xl font-semibold leading-[1.08] tracking-tight sm:text-4xl md:text-5xl">
+              Hear directly from our team.
+            </h2>
+            <p className="mt-5 text-base text-slate md:text-lg">
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-8 lg:grid-cols-2">
+            {[
+              { id: "lznmvR1tgMs", title: "What is Hardware Test Engineering?" },
+              { id: "PflUejqmSls", title: "MRO Electronics Testing" },
+            ].map((v) => (
+              <article key={v.title} className="overflow-hidden rounded-3xl border border-slate/10 bg-white shadow-card">
+                <div className="border-b border-slate/10 px-6 py-5">
+                  <p className="text-sm font-semibold text-navy">{v.title}</p>
+                </div>
+                <div className="relative aspect-video bg-black">
+                  <iframe
+                    title={v.title}
+                    className="absolute inset-0 h-full w-full"
+                    src={`https://www.youtube-nocookie.com/embed/${v.id}?rel=0&modestbranding=1`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <footer id="contact" className="border-t border-slate/10 bg-white px-6 py-12">
         <div className="mx-auto w-full max-w-[1200px]">
           <div className="grid gap-10 md:grid-cols-3">
