@@ -438,10 +438,13 @@ function SiteHeader({ onOpenCalendly }: { onOpenCalendly: () => void }) {
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
             <a className={linkClass} href="#coverage">
-              Test Station Types
+              Type of test stations
             </a>
             <a className={linkClass} href="#examples">
-              Project Examples
+              Project examples
+            </a>
+            <a className={linkClass} href="/funtest">
+              Software
             </a>
             <a className={linkClass} href="#contact">
               Contact
@@ -497,6 +500,7 @@ function SiteHeader({ onOpenCalendly }: { onOpenCalendly: () => void }) {
               {[
                 { href: "#coverage", label: "Type of test stations" },
                 { href: "#examples", label: "Project examples" },
+                { href: "/funtest", label: "Software" },
                 { href: "#contact", label: "Contact" },
               ].map((item) => (
                 <a
@@ -1040,6 +1044,94 @@ export default function TestCoverageSection() {
               >
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal" aria-hidden="true" />
                 {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="software" className="relative overflow-hidden border-t border-white/10 bg-navy px-6 py-16 text-white md:py-24">
+        <div className="pointer-events-none absolute inset-0 opacity-[0.9]" aria-hidden="true">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,184,169,0.14),transparent_55%),radial-gradient(circle_at_bottom,rgba(255,255,255,0.05),transparent_55%)]"></div>
+          <div className="absolute inset-0 [background-image:linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:52px_52px] opacity-[0.18]"></div>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-[1200px]">
+          <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-14">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-teal/95">Software</p>
+              <h2 className="mt-5 text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl">
+                funTest software
+                <br />
+                built into every station.
+              </h2>
+              <p className="mt-6 max-w-xl text-base text-white/75 md:text-lg">
+                The fastest path to automated hardware testing — without needing a LabVIEW or Python developer and
+                without building a test automation framework from scratch.
+              </p>
+
+              <div className="mt-10 flex flex-wrap items-center gap-3">
+                <a
+                  href="/funtest"
+                  className="rounded-xl bg-teal px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Learn more
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setCalendlyOpen(true)}
+                  className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                  Book a call
+                </button>
+              </div>
+            </div>
+
+            <div className="relative min-w-0">
+              <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-[0_40px_90px_-60px_rgba(0,0,0,0.75)] backdrop-blur">
+                <div className="relative aspect-video bg-black/30">
+                  {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                  <video
+                    className="absolute inset-0 h-full w-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    controls={false}
+                    src="/video/fT%20Video.mp4"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <ul className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4" aria-label="FunTest highlights">
+            {[
+              {
+                title: "No-code sequences",
+                body: "Create test flows in a spreadsheet-style editor with formulas, conditions, and reusable steps.",
+              },
+              {
+                title: "Hardware plugins",
+                body: "Control COTS instruments, DAQ, switching, PLCs, CAN/LIN, TCP/IP, and more through plugins.",
+              },
+              {
+                title: "Operator interface",
+                body: "Guide the operator with text, images/video, prompts, and live results on one screen.",
+              },
+              {
+                title: "Reporting built in",
+                body: "Generate PDF/CSV reports and statistics automatically for traceability and quality.",
+              },
+            ].map((f) => (
+              <li key={f.title} className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                <div
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,184,169,0.10),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  aria-hidden="true"
+                ></div>
+                <p className="relative text-sm font-semibold text-white">{f.title}</p>
+                <p className="relative mt-2 text-sm leading-relaxed text-white/70">{f.body}</p>
               </li>
             ))}
           </ul>
