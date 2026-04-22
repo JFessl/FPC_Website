@@ -147,9 +147,20 @@ const COMPONENT_DUT_ITEMS = [
 ] as const;
 
 const LRU_DUT_ITEMS = [
-  { src: "/visual/subsystem-box-1.png", label: "Power", alt: "Line replaceable unit" },
-  { src: "/visual/subsystem-box-2.png", label: "Communication", alt: "Assembly unit" },
+  { src: "/visual/subsystem-box-1.png", label: "Power Electronics", alt: "Line replaceable unit" },
+  { src: "/visual/subsystem-box-2.png", label: "LRUs", alt: "Assembly unit" },
   { src: "/visual/subsystem-box-3.png", label: "Flight Computer", alt: "Subsystem module" },
+] as const;
+
+const TEST_TYPES = [
+  "Functional test",
+  "Environmental (temperature, humidity, vibration)",
+  "HALT / HASS",
+  "Burn-in",
+  "ATE (automated test equipment)",
+  "Hardware-in-the-loop (HIL)",
+  "RF / EMC characterization",
+  "End-of-line acceptance",
 ] as const;
 
 const COMPLEX_HARDWARE_IMAGES = [
@@ -210,14 +221,6 @@ function ComplexHardwareMarquee() {
 
   return (
     <div className="relative w-full min-w-0 overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-8 bg-gradient-to-r from-surface to-transparent motion-reduce:hidden sm:w-10"
-        aria-hidden="true"
-      />
-      <div
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-surface to-transparent motion-reduce:hidden sm:w-10"
-        aria-hidden="true"
-      />
       <DraggableMarquee ariaLabel="Exploded hardware examples, scrolling" speed={0.55} className="motion-reduce:pb-1">
         <div className="flex w-max gap-4">
           {group("a")}
@@ -225,6 +228,129 @@ function ComplexHardwareMarquee() {
         </div>
       </DraggableMarquee>
     </div>
+  );
+}
+
+function formatInt(n: number) {
+  return Math.round(n).toLocaleString("en-US");
+}
+
+function CalendlyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose, open]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Book a meeting">
+      <button
+        type="button"
+        className="absolute inset-0 bg-navy/70 backdrop-blur-sm"
+        aria-label="Close booking dialog"
+        onClick={onClose}
+      />
+      <div className="absolute inset-0 flex items-center justify-center p-4 md:p-8">
+        <div className="relative w-full max-w-[980px] overflow-hidden rounded-3xl border border-white/10 bg-navy shadow-[0_50px_120px_-80px_rgba(0,0,0,0.85)]">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 bg-white/5 px-5 py-4 text-white backdrop-blur">
+            <div>
+              <p className="text-sm font-semibold">Book a 30-minute call</p>
+              <p className="mt-0.5 text-xs text-white/65">Calendly</p>
+            </div>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+              onClick={onClose}
+            >
+              Close
+            </button>
+          </div>
+          <div className="h-[72vh] min-h-[520px] bg-white">
+            <iframe
+              title="Calendly booking"
+              src="https://calendly.com/funtest/30min?hide_gdpr_banner=1"
+              className="h-full w-full"
+              frameBorder={0}
+              allow="clipboard-write; fullscreen"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CountUpNumber({
+  to,
+  durationMs = 1200,
+  suffix = "",
+  className = "",
+}: {
+  to: number;
+  durationMs?: number;
+  suffix?: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const [value, setValue] = useState(0);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) {
+      setValue(to);
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setStarted(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [to]);
+
+  useEffect(() => {
+    if (!started) return;
+    let raf = 0;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / durationMs);
+      // Ease-out cubic for a “modern” count feel.
+      const eased = 1 - Math.pow(1 - t, 3);
+      setValue(to * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [durationMs, started, to]);
+
+  const done = started && Math.round(value) >= to;
+  return (
+    <span ref={ref} className={[className, done ? "fpc-count-up-fade" : ""].filter(Boolean).join(" ")}>
+      {formatInt(done ? to : value)}
+      {suffix}
+    </span>
   );
 }
 
@@ -267,17 +393,17 @@ function DutImageStrip({
           {loop.map((it, i) => (
             <span
               key={`${it.label}-${i}`}
-              className="inline-flex shrink-0 items-center gap-4 rounded-full border border-white/10 bg-white/5 px-5 py-3"
+              className="inline-flex shrink-0 items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2"
             >
               <img
                 src={it.src}
                 alt={it.alt}
                 draggable={false}
-                className="h-[88px] w-auto object-contain sm:h-[96px]"
+                className="h-[66px] w-auto object-contain sm:h-[72px]"
                 loading="lazy"
                 decoding="async"
               />
-              <span className="text-base font-semibold text-white/90">{it.label}</span>
+              <span className="text-sm font-semibold text-white/90 sm:text-base">{it.label}</span>
             </span>
           ))}
         </div>
@@ -286,30 +412,28 @@ function DutImageStrip({
   );
 }
 
-function SiteHeader() {
+function SiteHeader({ onOpenCalendly }: { onOpenCalendly: () => void }) {
   const linkClass =
     "text-sm font-semibold text-white/90 transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal";
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto w-full max-w-[1200px] px-6 pt-5">
         <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-navy/35 px-4 py-3 backdrop-blur-md md:px-6">
-          <a href="#top" className="flex items-baseline gap-3">
-            <span className="text-lg font-semibold tracking-tight text-white">FPC</span>
+          <a href="#top" className="flex items-center gap-3">
+            <img src="/visual/Logo.png" alt="FPC" className="h-7 w-auto object-contain" draggable={false} />
             <span className="hidden text-xs font-semibold uppercase tracking-[0.22em] text-white/60 md:inline">
-              Test Development
+              Hardware Test Development
             </span>
           </a>
 
           <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
-            <a className={linkClass} href="#overview">
-              Overview
-            </a>
             <a className={linkClass} href="#coverage">
-              Coverage
+              Test Station Types
             </a>
             <a className={linkClass} href="#examples">
-              Examples
+              Project Examples
             </a>
             <a className={linkClass} href="#contact">
               Contact
@@ -317,20 +441,74 @@ function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-3">
-            <a
-              href="#contact"
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-white/90 backdrop-blur transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal md:hidden"
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-menu"
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
+                {mobileOpen ? (
+                  <path
+                    d="M6 6l12 12M18 6 6 18"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                ) : (
+                  <path
+                    d="M4 7h16M4 12h16M4 17h16"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenCalendly}
               className="rounded-xl bg-teal px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Let’s talk
-            </a>
+              Let’s chat
+            </button>
           </div>
         </div>
+
+        {mobileOpen ? (
+          <div
+            id="mobile-menu"
+            className="mt-3 overflow-hidden rounded-2xl border border-white/10 bg-navy/70 backdrop-blur-md md:hidden"
+            aria-label="Mobile navigation"
+          >
+            <nav className="flex flex-col px-4 py-3" aria-label="Primary mobile">
+              {[
+                { href: "#coverage", label: "Type of test stations" },
+                { href: "#examples", label: "Project examples" },
+                { href: "#contact", label: "Contact" },
+              ].map((item) => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  className="rounded-xl px-3 py-2 text-sm font-semibold text-white/90 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+        ) : null}
       </div>
     </header>
   );
 }
 
-function HeroVideo() {
+function HeroVideo({ onOpenCalendly }: { onOpenCalendly: () => void }) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoOk, setVideoOk] = useState(true);
 
@@ -385,48 +563,64 @@ function HeroVideo() {
       <div className="relative mx-auto flex w-full max-w-[1200px] flex-col justify-end px-6 pb-16 pt-28 md:pb-20 md:pt-32">
         <div className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-teal/95">
-            Aerospace &amp; defense test engineering
+            Hardware Test Engineering
           </p>
           <h1 className="mt-5 text-4xl font-semibold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl">
             Test stations for every integration level.
           </h1>
           <p className="mt-6 max-w-2xl text-base text-white/80 md:text-lg">
-            From single components to LRUs and full platforms — we design test solutions that keep hardware programs
+            From single components to subsystems and full platforms — we design test solutions that keep hardware programs
             moving with repeatability and traceable results.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-3">
-            <a
-              href="#overview"
+            <button
+              type="button"
+              onClick={onOpenCalendly}
               className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-navy transition hover:bg-white/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              See how it scales
-            </a>
+              Let's chat
+            </button>
             <a
               href="#coverage"
               className="rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              View coverage
+              
+              View test stations types
             </a>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-wrap gap-2 text-xs font-semibold text-white/80">
-          {["Component verification", "Subsystem validation", "Automation + reporting"].map((t) => (
-            <span key={t} className="rounded-full border border-white/15 bg-white/5 px-4 py-2 backdrop-blur">
-              {t}
-            </span>
-          ))}
+        <div className="mt-12 w-full max-w-[1200px]">
+          <DraggableMarquee ariaLabel="Test types we provide" speed={0.9} className="overflow-x-hidden">
+            <div className="flex w-max items-center gap-2 py-1">
+              {(["a", "b"] as const).map((g) => (
+                <div key={g} className="flex items-center gap-2">
+                  {TEST_TYPES.map((t) => (
+                    <span
+                      key={`${g}-${t}`}
+                      className="shrink-0 whitespace-nowrap rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 backdrop-blur"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </DraggableMarquee>
         </div>
       </div>
     </section>
   );
 }
 export default function TestCoverageSection() {
+  const [calendlyOpen, setCalendlyOpen] = useState(false);
+
   return (
     <div className="bg-surface text-slate antialiased">
-      <SiteHeader />
-      <HeroVideo />
+      <SiteHeader onOpenCalendly={() => setCalendlyOpen(true)} />
+      <HeroVideo onOpenCalendly={() => setCalendlyOpen(true)} />
+      <CalendlyModal open={calendlyOpen} onClose={() => setCalendlyOpen(false)} />
 
       <section id="overview" className="relative overflow-hidden px-6 py-16 md:py-24">
         <div className="pointer-events-none absolute inset-0 opacity-[0.8]" aria-hidden="true">
@@ -524,15 +718,15 @@ export default function TestCoverageSection() {
             {/* DOM order = mobile stack: copy → DUT → station → bullets. lg:order swaps columns so station stays left on wide screens. */}
             <div className="grid items-start gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
               <div className="min-w-0 order-1 lg:order-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-teal/95">LRU &amp; assembly stations</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-teal/95">Subsystems test stations</p>
                 <h2 className="mt-5 text-3xl font-semibold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl">
-                  Validate LRUs
+                  Validate subsystems
                   <br />
                   as integrated units.
                 </h2>
                 <p className="mt-6 max-w-xl text-base text-white/75 md:text-lg">
                   We build racks and stations that stimulate interfaces, run realistic sequences, and capture
-                  traceable results — so LRUs and assemblies are ready for final integration.
+                  traceable results — so subsytems are ready for final integration.
                 </p>
 
                 <div className="mt-10 w-full min-w-0 max-w-full">
@@ -674,12 +868,14 @@ export default function TestCoverageSection() {
         </div>
         <div className="relative mx-auto grid max-w-[1000px] grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8 md:gap-12">
           {[
-            { value: "1,200+", label: "Projects delivered" },
-            { value: "23", label: "Countries served" },
-            { value: "25+", label: "Years of expertise" },
+            { to: 1200, suffix: "+", label: "Projects delivered" },
+            { to: 23, suffix: "", label: "Countries served" },
+            { to: 25, suffix: "+", label: "Years of expertise" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-4xl font-bold tabular-nums tracking-tight text-white sm:text-5xl md:text-6xl">{stat.value}</p>
+              <p className="text-4xl font-bold tabular-nums tracking-tight text-white sm:text-5xl md:text-6xl">
+                <CountUpNumber to={stat.to} suffix={stat.suffix} />
+              </p>
               <p className="mt-2 text-sm font-medium text-white/65 md:mt-3 md:text-base">{stat.label}</p>
             </div>
           ))}
@@ -842,18 +1038,90 @@ export default function TestCoverageSection() {
         </div>
       </section>
 
-      <footer id="contact" className="border-t border-slate/10 bg-white px-6 py-10">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-          <div>
-            <p className="text-sm font-semibold text-navy">FPC</p>
-            <p className="mt-1 text-sm text-slate">Test development for aerospace-grade hardware.</p>
+      <footer id="contact" className="border-t border-slate/10 bg-white px-6 py-12">
+        <div className="mx-auto w-full max-w-[1200px]">
+          <div className="grid gap-10 md:grid-cols-3">
+            <div>
+              <div className="flex items-center gap-3">
+                <img src="/visual/Logo_Footer.png" alt="FPC" className="h-8 w-auto object-contain" draggable={false} />
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-slate">
+              We design test solutions that keep hardware programs moving with repeatability and traceable results.
+              </p>
+              <div className="mt-5 flex items-center gap-3">
+                <a
+                  href="https://www.linkedin.com/company/fpc-usa"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center rounded-xl border border-slate/15 bg-surface px-3 py-2 text-navy transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                  aria-label="FPC on LinkedIn"
+                  title="LinkedIn"
+                >
+                  <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor" aria-hidden="true">
+                    <path d="M20.447 20.452H17.21v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.01V9h3.086v1.561h.043c.43-.815 1.48-1.673 3.045-1.673 3.256 0 3.858 2.144 3.858 4.932v6.632ZM5.337 7.433a1.79 1.79 0 1 1 0-3.58 1.79 1.79 0 0 1 0 3.58ZM6.956 20.452H3.717V9h3.239v11.452ZM22.225 0H1.771C.792 0 0 .774 0 1.727v20.545C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.273V1.727C24 .774 23.2 0 22.222 0h.003Z" />
+                  </svg>
+                </a>
+                <a
+                  href="#top"
+                  className="rounded-xl border border-slate/15 bg-surface px-4 py-2 text-sm font-semibold text-navy transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                >
+                  Back to top
+                </a>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate/70">Contact</p>
+              <dl className="mt-4 space-y-3 text-sm">
+                <div>
+                  <dt className="sr-only">Email</dt>
+                  <dd>
+                    <a className="font-semibold text-navy hover:underline" href="mailto:info@funtestfpc.com">
+                      info@funtestfpc.com
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="sr-only">Telephone</dt>
+                  <dd>
+                    <a className="font-semibold text-navy hover:underline" href="tel:+12134319776">
+                      213-431-9776
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt className="sr-only">Address</dt>
+                  <dd className="leading-relaxed text-slate">
+                    2335 W 208th St
+                    <br />
+                    Torrance, CA 90501
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate/70">Links</p>
+              <nav className="mt-4 flex flex-col gap-2 text-sm" aria-label="Footer">
+                {[
+                  { href: "#overview", label: "Overview" },
+                  { href: "#coverage", label: "Coverage" },
+                  { href: "#examples", label: "Examples" },
+                  { href: "#process", label: "How we work" },
+                  { href: "#capabilities", label: "What we deliver" },
+                ].map((l) => (
+                  <a key={l.href} href={l.href} className="font-semibold text-navy/90 hover:text-navy hover:underline">
+                    {l.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
           </div>
-          <a
-            href="#top"
-            className="rounded-xl border border-slate/15 bg-surface px-4 py-2 text-sm font-semibold text-navy transition hover:bg-white"
-          >
-            Back to top
-          </a>
+
+          <div className="mt-10 flex flex-col gap-3 border-t border-slate/10 pt-6 text-xs text-slate md:flex-row md:items-center md:justify-between">
+            <p>© {new Date().getFullYear()} FPC. All rights reserved.</p>
+            <p className="text-slate/70"></p>
+          </div>
         </div>
       </footer>
     </div>

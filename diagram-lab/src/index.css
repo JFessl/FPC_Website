@@ -10,3 +10,18 @@ body {
 body {
   margin: 0;
 }
+
+@keyframes fpc-count-up-fade {
+  from {
+    opacity: 0.85;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fpc-count-up-fade {
+  animation: fpc-count-up-fade 450ms ease-out both;
+}
