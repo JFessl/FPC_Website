@@ -16,6 +16,7 @@ function DraggableMarquee({
   const [isDragging, setIsDragging] = useState(false);
   const draggingRef = useRef(false);
   const lastClientX = useRef(0);
+  const carry = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -35,7 +36,14 @@ function DraggableMarquee({
     const tick = () => {
       const node = scrollRef.current;
       if (!node) return;
-      node.scrollLeft += speed;
+      // iOS Safari can effectively quantize scrollLeft to integer pixels.
+      // Accumulate sub-pixel movement so speeds < 1 still advance.
+      carry.current += speed;
+      const step = Math.trunc(carry.current);
+      if (step !== 0) {
+        node.scrollLeft += step;
+        carry.current -= step;
+      }
       const half = node.scrollWidth / 2;
       if (half > 0 && node.scrollLeft >= half - 1) {
         node.scrollLeft -= half;
