@@ -13,6 +13,23 @@ function stripHtml(html: string) {
     .trim();
 }
 
+function decodeEntities(s: string) {
+  return s
+    .replace(/<!\\[CDATA\\[/g, "")
+    .replace(/\\]\\]>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+}
+
+function getTag(itemXml: string, tag: string) {
+  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
+  const m = itemXml.match(re);
+  return m?.[1] ? decodeEntities(m[1].trim()) : "";
+}
+
 export default async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const limitRaw = url.searchParams.get("limit");
@@ -23,6 +40,7 @@ export default async function handler(req: Request): Promise<Response> {
       headers: {
         // Some origins are more reliable when a UA is present.
         "user-agent": "FPC Website (Vercel Edge)",
+        accept: "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.7",
       },
     });
     if (!res.ok) {
@@ -36,23 +54,21 @@ export default async function handler(req: Request): Promise<Response> {
     }
 
     const xmlText = await res.text();
-    const doc = new DOMParser().parseFromString(xmlText, "text/xml");
-    const items = Array.from(doc.querySelectorAll("item"));
-
-    const posts = items
-      .map((item) => {
-        const link = item.querySelector("link")?.textContent?.trim() ?? "";
-        const guid = item.querySelector("guid")?.textContent?.trim() ?? link;
-        const title = item.querySelector("title")?.textContent?.trim() ?? "Untitled";
-        const pubDateRaw = item.querySelector("pubDate")?.textContent?.trim() ?? "";
+    const itemMatches = xmlText.match(/<item\\b[\\s\\S]*?<\\/item>/gi) ?? [];
+    const posts = itemMatches
+      .slice(0, limit)
+      .map((itemXml) => {
+        const urlStr = getTag(itemXml, "link");
+        const guid = getTag(itemXml, "guid") || urlStr;
+        const title = getTag(itemXml, "title") || "Untitled";
+        const pubDateRaw = getTag(itemXml, "pubDate");
         const publishedIso = pubDateRaw ? new Date(pubDateRaw).toISOString() : "";
-        const description = item.querySelector("description")?.textContent?.trim() ?? "";
+        const description = getTag(itemXml, "description");
         const excerpt = description ? stripHtml(description).slice(0, 200) : "";
-        if (!link) return null;
-        return { id: guid || link, title, url: link, publishedIso, excerpt };
+        if (!urlStr) return null;
+        return { id: guid || urlStr, title, url: urlStr, publishedIso, excerpt };
       })
-      .filter(Boolean)
-      .slice(0, limit);
+      .filter(Boolean);
 
     return new Response(JSON.stringify({ ok: true, posts }), {
       status: 200,
