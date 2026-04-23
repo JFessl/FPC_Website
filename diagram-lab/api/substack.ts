@@ -1,8 +1,5 @@
-export const config = {
-  runtime: "edge",
-};
-
 const FEED_URL = "https://fpctest.substack.com/feed";
+import Parser from "rss-parser";
 
 function stripHtml(html: string) {
   return html
@@ -13,22 +10,7 @@ function stripHtml(html: string) {
     .trim();
 }
 
-function decodeEntities(s: string) {
-  return s
-    .replace(/<!\\[CDATA\\[/g, "")
-    .replace(/\\]\\]>/g, "")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
-}
-
-function getTag(itemXml: string, tag: string) {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`, "i");
-  const m = itemXml.match(re);
-  return m?.[1] ? decodeEntities(m[1].trim()) : "";
-}
+const parser = new Parser();
 
 export default async function handler(req: Request): Promise<Response> {
   const url = new URL(req.url);
@@ -36,36 +18,22 @@ export default async function handler(req: Request): Promise<Response> {
   const limit = Math.min(Math.max(Number(limitRaw ?? "6") || 6, 1), 12);
 
   try {
-    const res = await fetch(FEED_URL, {
-      headers: {
-        // Some origins are more reliable when a UA is present.
-        "user-agent": "FPC Website (Vercel Edge)",
-        accept: "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.7",
-      },
-    });
-    if (!res.ok) {
-      return new Response(JSON.stringify({ ok: false, error: `feed_http_${res.status}` }), {
-        status: 502,
-        headers: {
-          "content-type": "application/json; charset=utf-8",
-          "cache-control": "s-maxage=900, stale-while-revalidate=86400",
-        },
-      });
-    }
-
+    const res = await fetch(FEED_URL);
+    if (!res.ok) throw new Error(`feed_http_${res.status}`);
     const xmlText = await res.text();
-    const itemMatches = xmlText.match(/<item\\b[\\s\\S]*?<\\/item>/gi) ?? [];
-    const posts = itemMatches
+
+    const feed = await parser.parseString(xmlText);
+    const posts = (feed.items ?? [])
       .slice(0, limit)
-      .map((itemXml) => {
-        const urlStr = getTag(itemXml, "link");
-        const guid = getTag(itemXml, "guid") || urlStr;
-        const title = getTag(itemXml, "title") || "Untitled";
-        const pubDateRaw = getTag(itemXml, "pubDate");
-        const publishedIso = pubDateRaw ? new Date(pubDateRaw).toISOString() : "";
-        const description = getTag(itemXml, "description");
-        const excerpt = description ? stripHtml(description).slice(0, 200) : "";
+      .map((item) => {
+        const urlStr = (item.link ?? "").trim();
         if (!urlStr) return null;
+        const guid = (item.guid ?? urlStr).trim();
+        const title = (item.title ?? "Untitled").trim();
+        const dateRaw = item.isoDate ?? item.pubDate ?? "";
+        const publishedIso = dateRaw ? new Date(dateRaw).toISOString() : "";
+        const description = (item.contentSnippet ?? item.content ?? item.summary ?? "") as string;
+        const excerpt = description ? stripHtml(String(description)).slice(0, 200) : "";
         return { id: guid || urlStr, title, url: urlStr, publishedIso, excerpt };
       })
       .filter(Boolean);
@@ -78,7 +46,8 @@ export default async function handler(req: Request): Promise<Response> {
       },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: "fetch_failed" }), {
+    const msg = e instanceof Error ? e.message : "fetch_failed";
+    return new Response(JSON.stringify({ ok: false, error: msg }), {
       status: 502,
       headers: { "content-type": "application/json; charset=utf-8" },
     });

@@ -6,6 +6,7 @@ type SubstackPost = {
   url: string;
   publishedIso: string;
   excerpt?: string;
+  imageUrl?: string;
 };
 
 function formatDate(iso: string) {
@@ -16,7 +17,7 @@ function formatDate(iso: string) {
 
 export default function SubstackSection({
   profileUrl = "https://substack.com/@fpctest?utm_campaign=profile&utm_medium=profile-page",
-  maxPosts = 6,
+  maxPosts = 4,
 }: {
   profileUrl?: string;
   maxPosts?: number;
@@ -29,11 +30,12 @@ export default function SubstackSection({
     const run = async () => {
       try {
         setFailed(false);
-        const res = await fetch(`/api/substack?limit=${encodeURIComponent(String(maxPosts))}`);
-        if (!res.ok) throw new Error(`api http ${res.status}`);
+        const res = await fetch("/substack-posts.json", { cache: "no-store" });
+        if (!res.ok) throw new Error(`json http ${res.status}`);
         const data = (await res.json()) as { ok: boolean; posts?: SubstackPost[] };
-        if (!data.ok || !data.posts) throw new Error("api error");
-        if (!cancelled) setPosts(data.posts);
+        const limited = (data.posts ?? []).slice(0, maxPosts);
+        if (!data.ok || !limited.length) throw new Error("json empty");
+        if (!cancelled) setPosts(limited);
       } catch {
         if (!cancelled) {
           setFailed(true);
@@ -92,19 +94,33 @@ export default function SubstackSection({
             </p>
           </div>
         ) : posts && posts.length ? (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 -mx-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex gap-6">
             {posts.map((p) => (
               <a
                 key={p.id}
                 href={p.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group relative overflow-hidden rounded-3xl border border-slate/10 bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-[0_30px_70px_-55px_rgba(10,37,64,0.50)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal"
+                className="group relative w-[320px] shrink-0 overflow-hidden rounded-3xl border border-slate/10 bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-[0_30px_70px_-55px_rgba(10,37,64,0.50)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal sm:w-[340px] lg:w-[300px]"
               >
                 <div
                   className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,184,169,0.10),transparent_55%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                   aria-hidden="true"
                 ></div>
+                {p.imageUrl ? (
+                  <div className="relative mb-4 aspect-[16/9] overflow-hidden rounded-2xl border border-slate/10 bg-surface">
+                    <img
+                      src={p.imageUrl}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      referrerPolicy="no-referrer"
+                      draggable={false}
+                    />
+                  </div>
+                ) : null}
                 <p className="relative text-sm font-semibold text-navy">{p.title}</p>
                 {p.publishedIso ? (
                   <p className="relative mt-2 text-xs font-semibold uppercase tracking-[0.22em] text-slate/70">
@@ -115,12 +131,15 @@ export default function SubstackSection({
                 <p className="relative mt-5 text-sm font-semibold text-teal">Read article</p>
               </a>
             ))}
+            </div>
           </div>
         ) : (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-label="Loading articles">
-            {Array.from({ length: Math.min(maxPosts, 6) }).map((_, idx) => (
-              <div key={idx} className="h-40 animate-pulse rounded-3xl border border-slate/10 bg-white/70" />
-            ))}
+          <div className="mt-12 -mx-2 overflow-x-auto px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Loading articles">
+            <div className="flex gap-6">
+              {Array.from({ length: maxPosts }).map((_, idx) => (
+                <div key={idx} className="h-40 w-[320px] shrink-0 animate-pulse rounded-3xl border border-slate/10 bg-white/70 sm:w-[340px] lg:w-[300px]" />
+              ))}
+            </div>
           </div>
         )}
       </div>
