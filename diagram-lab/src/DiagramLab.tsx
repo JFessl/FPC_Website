@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import SubstackSection from "./SubstackSection";
 
 function DraggableMarquee({
   children,
@@ -1226,6 +1227,8 @@ export default function TestCoverageSection() {
           </div>
         </div>
       </section>
+
+      <SubstackSection />
 
       <footer id="contact" className="border-t border-slate/10 bg-white px-6 py-12">
         <div className="mx-auto w-full max-w-[1200px]">
