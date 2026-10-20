@@ -2,6 +2,14 @@
   "ok": true,
   "posts": [
     {
+      "id": "https://fpctest.substack.com/p/mro-electronics-testing-precision",
+      "title": "MRO Electronics Testing: Precision, Reliability, and Safety in Aviation",
+      "url": "https://fpctest.substack.com/p/mro-electronics-testing-precision",
+      "publishedIso": "2026-04-23T23:44:08.000Z",
+      "excerpt": "Modern aircraft depend on sophisticated avionics systems that must function flawlessly.",
+      "imageUrl": "https://substackcdn.com/image/fetch/$s_!EZT9!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb5db9c7c-03aa-4251-ba1c-9e346a91f748_1083x1280.png"
+    },
+    {
       "id": "https://fpctest.substack.com/p/essential-skills-for-hardware-test",
       "title": "Essential Skills for Hardware Test Development: An Overview",
       "url": "https://fpctest.substack.com/p/essential-skills-for-hardware-test",
@@ -24,14 +32,6 @@
       "publishedIso": "2026-04-23T16:37:28.000Z",
       "excerpt": "Why is Python so popular?",
       "imageUrl": "https://substackcdn.com/image/fetch/$s_!JnYh!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fda581ba9-aa65-4e7e-aca6-e759f6012511_826x463.gif"
-    },
-    {
-      "id": "https://fpctest.substack.com/p/creating-effective-test-reports-in",
-      "title": "Creating Effective Test Reports in Hardware Production",
-      "url": "https://fpctest.substack.com/p/creating-effective-test-reports-in",
-      "publishedIso": "2026-04-23T16:30:07.000Z",
-      "excerpt": "In the intricate realm of hardware testing, creating comprehensive test reports is a task of paramount importance, yet it presents several challenges.",
-      "imageUrl": "https://substackcdn.com/image/fetch/$s_!4iIK!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe0465d83-81d7-4ccc-863c-a554f68f184f_2564x1610.webp"
     }
   ]
 }
