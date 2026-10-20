@@ -61,14 +61,68 @@ button:focus-visible,.dot:focus-visible,#c:focus-visible{outline:2px solid var(-
   #pill{bottom:16px;padding:4px 10px}
   .dot{width:24px;height:24px}
 }
+/* touch / phone navigation — only active when JS adds body.touchnav ((pointer:coarse) or width ≤ 760px); desktop is untouched */
+#mnav,#mstages,#mhint{display:none}
+body.touchnav{overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+body.touchnav button{touch-action:manipulation}
+body.touchnav #pill{display:none}
+body.touchnav #brand{left:calc(14px + env(safe-area-inset-left));top:calc(14px + env(safe-area-inset-top));max-width:calc(100vw - 28px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+body.touchnav #brand .kick{margin-bottom:8px}
+body.touchnav #fpcLogo{right:calc(14px + env(safe-area-inset-right));bottom:calc(80px + env(safe-area-inset-bottom));width:64px}
+body.touchnav:has(#mstages.open) #fpcLogo{opacity:0}
+body.touchnav #mnav{display:flex;position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;align-items:center;gap:4px;padding:4px;border-radius:999px;max-width:calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+#mnav .nb{width:48px;height:48px;border-radius:50%;border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;flex:none;padding:0}
+#mnav .nb svg{width:20px;height:20px}
+#mnav .nb:active{background:rgba(20,21,24,.12)}
+#mnav .nb:disabled{opacity:.3}
+#mnav .mid{min-height:48px;min-width:0;border:0;background:transparent;color:var(--ink);font:600 13px/1.15 var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 10px;cursor:pointer;border-radius:24px}
+#mnav .mid:active{background:rgba(20,21,24,.08)}
+#mnav .mid .n{font-family:var(--disp);font-size:13px;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
+#mnav .mid .n::after{content:"";width:6px;height:6px;border-right:1.5px solid var(--ink2);border-bottom:1.5px solid var(--ink2);transform:translateY(-1px) rotate(-135deg)}
+#mnav .mid .t{font-size:12px;font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:calc(100vw - 150px)}
+body.touchnav #mstages.open{display:block;position:fixed;left:0;right:0;bottom:0;z-index:9;border-radius:14px 14px 0 0;max-height:78vh;overflow:auto;padding:8px calc(10px + env(safe-area-inset-right)) calc(12px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left))}
+#mstages header{display:flex;align-items:center;justify-content:space-between;padding:6px 6px 6px 10px}
+#mstages header button{min-width:44px;min-height:44px}
+#mstages .icon{border:0;background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;border-radius:8px;padding:0}#mstages .icon svg{width:14px;height:14px}
+#mstages ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:2px}#mstages li{min-width:0}
+#mstages li button{width:100%;min-height:48px;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:var(--ink);font:600 14px/1.25 var(--sans);text-align:left;padding:6px 10px;border-radius:10px;cursor:pointer}
+#mstages li button:active{background:rgba(20,21,24,.08)}
+#mstages li button>span:last-child{min-width:0;flex:1;overflow:hidden}
+#mstages li button .k{font-family:var(--disp);font-size:12px;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--ctl);display:grid;place-items:center;flex:none;color:var(--ink2)}
+#mstages li button small{display:block;font-weight:500;font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#mstages li button[aria-current="true"]{background:rgba(255,90,31,.08)}
+#mstages li button[aria-current="true"] .k{background:var(--accent);border-color:var(--accent);color:#fff}
+#mscrim{display:none}
+body.touchnav:has(#mstages.open) #mscrim{display:block;position:fixed;inset:0;z-index:8;background:rgba(20,21,24,.18)}
+body.touchnav #mhint{display:block;position:fixed;left:50%;bottom:calc(118px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .5s ease}
+body.touchnav #mhint.show{opacity:1}
+@media (orientation:portrait){body.touchnav #brand h1{font-size:18px;letter-spacing:.04em}body.touchnav #brand p.cap{font-size:15px;line-height:1.42;margin-top:10px}body.touchnav .lab{font-size:10px;padding:4px 8px}}
+@media (orientation:landscape) and (max-height:500px){
+  body.touchnav #brand{max-width:min(56vw,520px)}
+  body.touchnav #brand h1{font-size:14px}
+  body.touchnav #brand p.cap{font-size:13px;margin-top:8px}
+  body.touchnav #brand .kick{display:none}
+  body.touchnav #mnav{left:auto;right:calc(10px + env(safe-area-inset-right));transform:none;bottom:calc(10px + env(safe-area-inset-bottom))}
+  body.touchnav #mnav .mid .t{max-width:34vw}
+  body.touchnav #fpcLogo{bottom:calc(14px + env(safe-area-inset-bottom));left:calc(14px + env(safe-area-inset-left));right:auto;width:56px}
+  body.touchnav #mhint{bottom:calc(72px + env(safe-area-inset-bottom));left:auto;right:calc(10px + env(safe-area-inset-right));transform:none}
+}
 </style>
 </head>
 <body>
-<canvas id="c" tabindex="0" aria-label="Customer success story in seven chapters. Scroll, use the arrow or Page keys, or click the chapter dots to step through; drag to look around; H hides the interface."></canvas>
+<canvas id="c" tabindex="0" aria-label="Customer success story in seven chapters. Scroll, use the arrow or Page keys, or click the chapter dots (on phones, the arrow buttons) to step through; drag to look around; H hides the interface."></canvas>
 <div id="labels" class="ui" aria-hidden="true"><div class="lab sc" id="labSup">Supplier</div><div class="lab sc" id="labCus">Customer</div><div class="lab sc" id="labReady">Ready for delivery</div></div>
 <header id="brand" class="ui"><p class="sc kick">Customer success story</p><h1 id="chapTitle" aria-live="polite">The system</h1><p class="cap" id="chapCap"></p></header>
 <img id="fpcLogo" class="ui" alt="FPC" width="104" height="37" decoding="async">
 <nav id="pill" class="card ui" aria-label="Chapters"><span class="num" id="chapNum" aria-live="polite">1 / 7</span><div class="dots" id="dots"></div></nav>
+<div id="mscrim" aria-hidden="true"></div>
+<nav id="mnav" class="card ui" aria-label="Chapter navigation">
+  <button class="nb" id="mPrev" aria-label="Previous chapter"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4.5L7 10l5.5 5.5"/></svg></button>
+  <button class="mid" id="mMid" aria-haspopup="dialog" aria-controls="mstages" aria-expanded="false"><span class="n" id="mNum">1 / 7</span><span class="t" id="mName">The system</span></button>
+  <button class="nb" id="mNext" aria-label="Next chapter"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 4.5L13 10l-5.5 5.5"/></svg></button>
+</nav>
+<div id="mstages" class="card ui" role="dialog" aria-label="Chapters"><header><span class="sc">Chapters</span><button class="icon" id="mClose" aria-label="Close chapter list"><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3l8 8M11 3l-8 8"/></svg></button></header><ol id="mList"></ol></div>
+<div id="mhint" class="card ui" aria-hidden="true">Swipe up to change chapter · drag sideways to look</div>
 <div id="loading" class="ui"><p class="sc">Building the story</p><div class="bar"><i></i></div></div>
 <div id="msg" role="alert"><div class="panel"><p class="sc">Customer success story</p><h2 id="msgTitle">This presentation needs WebGPU</h2><div id="msgBody"></div></div></div>
 <script>
@@ -1431,18 +1485,35 @@ function fitKey(pts, yaw, pitch, aspect, R = SAFE) {
     dist *= Math.pow(s, 0.8); if (Math.abs(s - 1) < 0.002 && Math.abs(cx) < 0.002 && Math.abs(cy) < 0.002) break; }
   return { t, yaw, pitch, dist };
 }
-const CAMK = { aspect: 0, keys: [] };
+// phone portrait (touch/narrow only): title + caption sit on top and the stage bar at the bottom, so each chapter is fitted
+// into the band between them (measured from the live layout), using the full width; wide scenes get a steeper, more oblique view
+const PHONE_CAMP = { 0: [58, 14], 1: [72, 17], 2: [80, 24], 3: [62, 26], 4: [66, 26], 5: [52, 30], 6: [50, 32] };
+function phoneSafe() {
+  const H = innerHeight, h = $('chapTitle'), c = $('chapCap'), t0 = h.textContent, c0 = c.textContent, out = [];
+  const nav = $('mnav').getBoundingClientRect(), logo = $('fpcLogo').getBoundingClientRect();
+  const bot = Math.min(nav.height ? nav.top : H - 76, logo.height ? logo.top : H - 110) - 6, y0 = -1 + 2 * (H - bot) / H;
+  for (let i = 0; i < NCH; i++) { h.textContent = CHAPTERS[i].t; c.textContent = CHAPTERS[i].c; const top = $('brand').getBoundingClientRect().bottom + 14;
+    out.push({ x0: -0.9, x1: 0.9, y0, y1: Math.max(y0 + 0.5, 1 - 2 * top / H) }); }
+  h.textContent = t0; c.textContent = c0; return out;
+}
+const CAMK = { aspect: 0, mode: '', keys: [] };
+const camMode = aspect => (typeof touchNavOn !== 'undefined' && touchNavOn && aspect < 1) ? 'phone:' + innerWidth + 'x' + innerHeight : 'desk';
 function buildCamKeys(aspect) {
-  const keys = [];
+  const keys = [], mode = camMode(aspect), ph = mode !== 'desk', PS = ph ? phoneSafe() : null;
+  const cp = c => ph ? PHONE_CAMP[c] : CAMP[c], sf = c => ph ? PS[c] : (SAFE_CH[c] || SAFE);
   for (let c = 0; c < NCH; c++) {
-    keys.push(fitKey(subjectPoints(SUBJ[c], c, FIT_T), CAMP[c][0], CAMP[c][1], aspect, SAFE_CH[c] || SAFE));
+    const kp = subjectPoints(SUBJ[c], c, FIT_T);
+    keys.push(fitKey(kp, cp(c)[0], cp(c)[1], aspect, sf(c)));
     if (c < NV) { const re = new RegExp(SUBJ[c].source + '|' + SUBJ[c + 1].source); let pts = [];
       for (const f of [0.25, 0.5, 0.75]) pts = pts.concat(subjectPoints(re, c + f, FIT_T.slice(0, 6)));
-      keys.push(fitKey(pts, (CAMP[c][0] + CAMP[c + 1][0]) / 2, (CAMP[c][1] + CAMP[c + 1][1]) / 2, aspect, SAFE_CH[c + 1] || SAFE)); }
+      keys.push(fitKey(pts, (cp(c)[0] + cp(c + 1)[0]) / 2, (cp(c)[1] + cp(c + 1)[1]) / 2, aspect, sf(c + 1))); }
   }
-  CAMK.keys = keys; CAMK.aspect = aspect; poseAll(ST.p, ST.clock);
+  CAMK.keys = keys; CAMK.aspect = aspect; CAMK.mode = mode; poseAll(ST.p, ST.clock);
 }
-const lerpKey = (a, b, s) => ({ t: V3.lerp(a.t, b.t, s), yaw: lerp(a.yaw, b.yaw, s), pitch: lerp(a.pitch, b.pitch, s), dist: Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), s)) });
+const lerpKey = (a, b, s) => { const dist = Math.exp(lerp(Math.log(a.dist), Math.log(b.dist), s));
+  // phone: the aim follows the zoom (pull back first, then pan; pan first, then push in), so a narrow screen keeps the subject in view mid-move
+  const st = CAMK.mode !== 'desk' && Math.abs(b.dist - a.dist) > 1e-6 ? clamp01((dist - a.dist) / (b.dist - a.dist)) : s;
+  return { t: V3.lerp(a.t, b.t, st), yaw: lerp(a.yaw, b.yaw, s), pitch: lerp(a.pitch, b.pitch, s), dist }; };
 function camAt(q) { q = clamp(q, 0, NV); const c = Math.min(Math.floor(q), NV - 1), s = smooth(q - c), K = CAMK.keys;
   if (q >= NV) return K[2 * NV]; return s < 0.5 ? lerpKey(K[2 * c], K[2 * c + 1], s * 2) : lerpKey(K[2 * c + 1], K[2 * c + 2], s * 2 - 1); }
 // ===================== UI: title + caption, chapter dots, keys / clicker, wheel + touch soft-snap, H hides =====================
@@ -1484,15 +1555,49 @@ function buildUI() {
     else { ST.lastInput = performance.now(); ST.jumping = false; ST.pTarget = clamp(ST.pTarget - dy / innerHeight * 2.2, 0, NV); } });
   const end = e => { if (ptr.id !== e.pointerId) return; cv.releasePointerCapture(e.pointerId); cv.classList.remove('dragging'); ptr.id = null; ptr.done = false; ST.orbiting = false; ST.lastInput = performance.now(); };
   cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
-  setChapterText(0);
+  buildTouchNav(); setChapterText(0);
 }
 function updateUI(cam) {
   const ch = chapterOf(ST.p); $('chapNum').textContent = `${ch + 1} / ${NCH}`; setChapterText(ch);
   [...$('dots').children].forEach((b, i) => b.setAttribute('aria-current', String(i === ch)));
   // zone tags (supplier / customer) only while both sites are on screen
   const a = appear(ST.p, 4.6, 4.95);
+  const placed = [];
   for (const [id, p] of [['labSup', [-8.5, 2.55, 0.2]], ['labCus', [-3.5, 2.05, 0.2]], ['labReady', [0, 3.05, 0]]]) { const el = $(id), s = projectPt(cam, p, innerWidth, innerHeight);
-    if (!s || a < 0.02) { el.style.opacity = 0; continue; } el.style.opacity = a; el.style.transform = `translate(${(s[0] - el.offsetWidth / 2).toFixed(1)}px,${(s[1] - el.offsetHeight).toFixed(1)}px)`; }
+    if (!s || a < 0.02) { el.style.opacity = 0; continue; } el.style.opacity = a;
+    let x = s[0] - el.offsetWidth / 2, y = s[1] - el.offsetHeight; const w = el.offsetWidth, hh = el.offsetHeight;
+    if (touchNavOn) { x = clamp(x, 6, innerWidth - w - 6); // phone: keep tags on screen and lift a tag that would overlap one already placed
+      for (const r of placed) if (x < r[0] + r[2] + 4 && x + w + 4 > r[0] && y < r[1] + r[3] + 4 && y + hh + 4 > r[1]) y = r[1] - hh - 6;
+      placed.push([x, y, w, hh]); }
+    el.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`; }
+}
+// ===================== touch / phone navigation (same stage bar + stage list as Line, Opened) =====================
+// Active only on touch-first or narrow screens: (pointer:coarse) or width ≤ 760px. Desktop (mouse, wide window) is unchanged.
+const TOUCH_MQ = matchMedia('(pointer:coarse), (max-width:760px)');
+let touchNavOn = false, mnavLast = -1;
+function setStageSheet(o) { $('mstages').classList.toggle('open', o); $('mMid').setAttribute('aria-expanded', String(o)); }
+function applyTouchNav() { touchNavOn = TOUCH_MQ.matches; document.body.classList.toggle('touchnav', touchNavOn); if (!touchNavOn) setStageSheet(false); mnavLast = -1; }
+function buildTouchNav() {
+  const list = $('mList');
+  CHAPTERS.forEach((ch, i) => { const li = document.createElement('li'), bt = document.createElement('button');
+    bt.innerHTML = `<span class="k">${i + 1}</span><span>${ch.t}<small>${ch.c}</small></span>`; bt.onclick = () => { jumpChapter(i); setStageSheet(false); }; li.appendChild(bt); list.appendChild(li); });
+  $('mPrev').onclick = () => stepChapter(-1); $('mNext').onclick = () => stepChapter(1);
+  $('mMid').onclick = () => setStageSheet(!$('mstages').classList.contains('open'));
+  $('mClose').onclick = () => setStageSheet(false);
+  $('mscrim').onclick = () => setStageSheet(false);
+  addEventListener('keydown', e => { if (e.key === 'Escape') setStageSheet(false); });
+  // no page zoom / pull-to-refresh: touch-action:none on body + canvas; iOS Safari also needs its gesture events cancelled
+  for (const ev of ['gesturestart', 'gesturechange']) document.addEventListener(ev, e => { if (touchNavOn) e.preventDefault(); }, { passive: false });
+  document.addEventListener('touchmove', e => { if (touchNavOn && e.target === $('c')) e.preventDefault(); }, { passive: false });
+  (TOUCH_MQ.addEventListener ? TOUCH_MQ.addEventListener('change', applyTouchNav) : TOUCH_MQ.addListener(applyTouchNav));
+  applyTouchNav();
+  if (touchNavOn) { const h = $('mhint'); setTimeout(() => h.classList.add('show'), 900); setTimeout(() => h.classList.remove('show'), 5200); }
+}
+function updateTouchNav(ch) {
+  if (!touchNavOn || ch === mnavLast) return; mnavLast = ch;
+  $('mNum').textContent = `${ch + 1} / ${NCH}`; $('mName').textContent = CHAPTERS[ch].t;
+  $('mPrev').disabled = ch <= 0; $('mNext').disabled = ch >= NV;
+  [...$('mList').children].forEach((li, i) => li.firstChild.setAttribute('aria-current', String(i === ch)));
 }
 // ===================== validation (run at start-up; results on window.__ssValidation) =====================
 function aabbOfObbs(obbs) { const lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
@@ -1535,6 +1640,8 @@ function runValidation() {
   ok('no part intersections at sampled scroll positions', cs.hits.length === 0, `${cs.poses} poses (${SAMPLE_Q.length} scroll × ${SAMPLE_T.length} clock), ${cs.tests} pair tests, ${cs.ms.toFixed(0)} ms${cs.hits.length ? '; ' + cs.hits.slice(0, 8).join('; ') : ''}`);
   const asp0 = CAMK.aspect; buildCamKeys(16 / 9); const fs = frameSweep(); if (asp0) buildCamKeys(asp0);
   ok('subjects stay in frame (16:9, every 1/8 chapter; the chapter being left, then the one arriving)', fs.bad.length === 0, `${fs.n} positions, worst |ndc| ${fs.worst.toFixed(3)}${fs.bad.length ? '; ' + fs.bad.slice(0, 8).join('; ') : ''}`);
+  if (touchNavOn && innerWidth < innerHeight) { const pa = innerWidth / innerHeight, a0 = CAMK.aspect; buildCamKeys(pa); const pf = frameSweep(pa); const off = pf.bad.filter(b => +b.split(': ')[1] > 1);
+    ok('phone portrait: subjects stay on screen between the title and the stage bar', off.length === 0, `${pf.n} positions at ${innerWidth}×${innerHeight}, worst |ndc| ${pf.worst.toFixed(3)}${off.length ? '; ' + off.slice(0, 8).join('; ') : ''}`); if (a0) buildCamKeys(a0); }
   poseAll(ST.p, ST.clock);
   const out = { pass: R.every(r => r.pass), checks: R, ms: performance.now() - t0, tris: SC.tris };
   console.log(`[ss] validation ${out.pass ? 'passed' : 'FAILED'} (${R.filter(r => r.pass).length}/${R.length}) in ${out.ms.toFixed(0)} ms`);
@@ -1562,7 +1669,7 @@ function canvasSize() {
   resizeTargets(w, h); return [w, h];
 }
 function computeCamera(dt, W, H, T) {
-  const aspect = W / H; if (Math.abs(aspect - CAMK.aspect) > 0.01) buildCamKeys(aspect);
+  const aspect = W / H; if (Math.abs(aspect - CAMK.aspect) > 0.01 || camMode(aspect) !== CAMK.mode) buildCamKeys(aspect);
   const base = camAt(ST.p), w1 = ST.reduced ? 0 : 1 - smoother(seg(ST.p, 0, 0.6));
   if (!ST.orbiting) { const d = Math.exp(-dt * 1.6); ST.yawOff *= d; ST.pitchOff *= d; }
   const want = { t: base.t, yaw: base.yaw + ST.yawOff + w1 * 5 * Math.sin(T * 0.22), pitch: base.pitch + ST.pitchOff, dist: base.dist };
@@ -1591,7 +1698,7 @@ function frame(now) {
   const cam = curCam = computeCamera(dt, W, H, T);
   packFrame(FRAME, cam, { shadowCenter: cam.target, shadowExtent: clamp(CAM.dist * 0.75, 2, 30), time: T, w: W, h: H, focus: CAM.dist, aperture: 0.0, exposure: 0.42, pathPhase: 0, pathOn: 0, aoRadius: clamp(CAM.dist * 0.02, 0.05, 0.5), dof: 0 });
   renderFrame(FRAME);
-  updateUI(cam);
+  updateUI(cam); updateTouchNav(chapterOf(ST.p));
   window.__ssFrames = (window.__ssFrames || 0) + 1;
 }
 function buildScene() { buildPrims(); buildStory(); return finalizeScene(); }
@@ -1616,7 +1723,7 @@ function watchDevice() {
   GPU.device.lost.then(async info => { GPU.ok = false; console.warn('[ss] device lost: ' + info.message); if (info.reason === 'destroyed') return; showMessage('lost', info.reason);
     try { await initGPU($('c')); GPU.w = 0; uploadScene(geoCache); watchDevice(); $('msg').classList.remove('show'); } catch (e) { showMessage('error', e.message); } });
 }
-window.__ss = { ST, ACT, ACTBY, SC, GPU, CAMK, CAM, LOGO, jumpChapter, stepChapter, poseAll, applyPoses, camAt, collisionSweep, frameSweep, captureOffscreen, chapterOf, buildCamKeys,
+window.__ss = { PHONE_CAMP, phoneSafe, ST, ACT, ACTBY, SC, GPU, CAMK, CAM, LOGO, jumpChapter, stepChapter, poseAll, applyPoses, camAt, collisionSweep, frameSweep, captureOffscreen, chapterOf, buildCamKeys,
   project: p => curCam ? projectPt(curCam, p, innerWidth, innerHeight) : null };
 start();
 </script>
